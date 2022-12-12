@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script>
+            var pessoas = [];
+
+            function salvar() {              
+                if(pessoas.find(pessoa => pessoa.nome == document.getElementById('nome').value) == undefined){
+                    var tabela = document.getElementById('tabela');
+                    tabela.innerText = '';
+
+                    pessoas.push({nome: document.getElementById('nome').value, idade: document.getElementById('idade').value});
+                    pessoas.sort((a, b) => b.idade - a.idade);
+
+                    for(let i = 0; i < pessoas.length; i++){
+                      var linhas = tabela.rows.length;
+                      var linha = tabela.insertRow(linhas);
+                      var col1 = linha.insertCell(0);
+                      var col2 = linha.insertCell(1);   
+                      var col3 = linha.insertCell(2);
+                      var col4 = linha.insertCell(3);
+                        
+                      col1.innerHTML = pessoas[i].nome;
+                      col2.innerHTML =  pessoas[i].idade;
+                      col3.innerHTML =  "<button onclick='editarLinha(this)'>Editar</button>";
+                      col4.innerHTML =  "<button onclick='removeLinha(this)'>Remover</button>";
+                    }
+
+                    document.getElementById('nome').value = ''; 
+                    document.getElementById('idade').value = '';
+                }else{
+                  alert('Nome existente');
+                  document.getElementById('nome').value = ''; 
+                  document.getElementById('idade').value = '';
+                }
+            }
+
+            function editarLinha(linha){
+              var i=linha.parentNode.parentNode.rowIndex;
+              var nome = linha.parentNode.parentNode.cells[0].innerHTML;
+              var idade = linha.parentNode.parentNode.cells[1].innerHTML;
+
+              linha.parentNode.parentNode.cells[0].innerHTML = "<input type=text id='nomeEdit" + i + "' value='"+ nome + "'/>";
+              linha.parentNode.parentNode.cells[1].innerHTML = "<input type=text id='idadeEdit" + i + "' value='"+ idade + "'/>";
+              linha.parentNode.parentNode.cells[2].innerHTML = "<button onclick='salvarEdicao(this)'>Salvar</button>"
+                                                              + '<button onclick="cancelarEdicao(' + "'" +  nome + "',' " + idade + "'" + ',this)">Cancelar</button>';
+            }
+
+            function salvarEdicao(linha){
+              var i=linha.parentNode.parentNode.rowIndex;
+              var nome = document.getElementById('nomeEdit' + i).value;
+              var idade = document.getElementById('idadeEdit' + i).value;
+              var tabela = document.getElementById('tabela');
+              tabela.innerText = '';
+
+              pessoas.splice(i - 1, 1);
+
+              pessoas.push({nome: nome, idade: idade});
+              pessoas.sort((a, b) => b.idade - a.idade);
+
+              for(let i = 0; i < pessoas.length; i++){
+                var linhas = tabela.rows.length;
+                var linha = tabela.insertRow(linhas);
+                var col1 = linha.insertCell(0);
+                var col2 = linha.insertCell(1);   
+                var col3 = linha.insertCell(2);
+                var col4 = linha.insertCell(3);
+                  
+                col1.innerHTML = pessoas[i].nome;
+                col2.innerHTML =  pessoas[i].idade;
+                col3.innerHTML =  "<button onclick='editarLinha(this)'>Editar</button>";
+                col4.innerHTML =  "<button onclick='removeLinha(this)'>Remover</button>";
+              }
+            }
+
+            function cancelarEdicao(nome, idade, linha){
+              linha.parentNode.parentNode.cells[0].innerHTML = nome;
+              linha.parentNode.parentNode.cells[1].innerHTML = idade;
+              linha.parentNode.parentNode.cells[2].innerHTML = "<button onclick='editarLinha(this)'>Editar</button>";
+            }
+
+            function removeLinha(linha) {
+              var result = confirm("Deseja apagar esta linha?");
+              if (result == true) {
+                var i=linha.parentNode.parentNode.rowIndex;
+                pessoas.splice(i - 1, 1);
+                document.getElementById('tbl').deleteRow(i);
+              }
+            }      
+        </script>       
+    </head>
+    <body>
+      <div>
+        Nome <input type="text" id="nome">
+      </div>
+      <div>
+        Idade <input type="text" id="idade">
+      </div>
+      <div>
+        <button onclick="salvar()">Salvar</button>
+      </div>
+      <div>
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Idade</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tabela"> 
+
+          </tbody>
+        </table>
+      </div>
+    </body>
+</html>
